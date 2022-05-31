@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
+}
+
+mainClassName = 'br.com.beez.BeezBot'
+group 'br.com.beez'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://m2.dv8tion.net/releases' }
+}
+
+
+dependencies {
+    implementation('net.dv8tion:JDA:5.0.0-alpha.4') {
+        exclude module: 'opus-java'
+    }
+
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.16.0'
+    implementation 'org.mongodb:mongodb-driver-sync:4.4.0'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'com.google.guava:guava:31.0.1-jre'
+
+    def lombok = 'org.projectlombok:lombok:1.18.22'
+    compileOnly lombok
+    annotationProcessor lombok
+}
+
+shadowJar {
+    archiveName("${project.name}-${project.version}.jar")
+}
+
+compileJava {
+    options.encoding('UTF-8')
+
+    sourceCompatibility('1.8')
+    targetCompatibility('1.8')
+}
