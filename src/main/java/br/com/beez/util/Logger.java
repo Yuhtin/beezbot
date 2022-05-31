@@ -1,7 +1,5 @@
 package br.com.beez.util;
 
-import com.yuhtin.commission.builderscommunity.models.enums.LogType;
-
 import java.time.LocalDateTime;
 
 /**
@@ -74,5 +72,14 @@ public class Logger {
         throwable.fillInStackTrace();
 
         return throwable.getStackTrace();
+    }
+
+    public enum LogType {
+        INFO,
+        WARNING,
+        SEVERE,
+        STARTUP,
+        DEBUG,
+        FINISH
     }
 }

@@ -10,6 +10,7 @@ import java.io.*;
 public class Config {
 
     private long guildId;
+    private long commandChannelId;
 
     private String mongoDatabase;
     private String mongoLogin;

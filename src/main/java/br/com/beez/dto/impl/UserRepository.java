@@ -2,10 +2,7 @@ package br.com.beez.dto.impl;
 
 import br.com.beez.dto.MongoRepository;
 import br.com.beez.dto.RepositoryCollection;
-import br.com.beez.model.profile.UserProfile;
-import br.com.beez.model.profile.SimpleWorker;
-import br.com.beez.model.workarea.ExtendedWorkArea;
-import com.google.common.collect.Lists;
+import br.com.beez.model.user.Profile;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mongodb.client.MongoCollection;
@@ -22,7 +19,7 @@ import java.util.LinkedList;
  * Github: https://github.com/Yuhtin
  */
 @Accessors(fluent = true)
-public class UserRepository implements MongoRepository<UserProfile, SimpleWorker> {
+public class UserRepository implements MongoRepository<Profile> {
 
     @Getter private static final UserRepository instance = new UserRepository();
     private static final Gson GSON = new GsonBuilder().create();
@@ -31,32 +28,32 @@ public class UserRepository implements MongoRepository<UserProfile, SimpleWorker
     private MongoCollection<Document> userTable;
 
     @Override
-    public UserProfile find(long id) {
+    public Profile find(long id) {
         val document = userTable.find(Filters.eq("_id", id)).first();
         if (document == null) {
-            val userProfile = UserProfile.builder()._id(id).build();
+            val userProfile = Profile.builder()._id(id).build();
             insert(userProfile);
 
             return userProfile;
         }
 
-        return GSON.fromJson(document.toJson(), UserProfile.class);
+        return GSON.fromJson(document.toJson(), Profile.class);
     }
 
-    public UserProfile findOnlyExists(long id) {
+    public Profile findOnlyExists(long id) {
         val document = userTable.find(Filters.eq("_id", id)).first();
-        if (document == null) return null;
+        if (document == null) return Profile.builder()._id(id).userId(id).build();
 
-        return GSON.fromJson(document.toJson(), UserProfile.class);
+        return GSON.fromJson(document.toJson(), Profile.class);
     }
 
     @Override
-    public void insert(UserProfile data) {
+    public void insert(Profile data) {
         userTable.insertOne(Document.parse(GSON.toJson(data)));
     }
 
     @Override
-    public void replace(UserProfile data) {
+    public void replace(Profile data) {
         userTable.replaceOne(Filters.eq("_id", data._id()), Document.parse(GSON.toJson(data)));
     }
 
@@ -66,22 +63,7 @@ public class UserRepository implements MongoRepository<UserProfile, SimpleWorker
     }
 
     @Override
-    public LinkedList<SimpleWorker> query(int maxValues) {
-        LinkedList<SimpleWorker> result = Lists.newLinkedList();
-        for (val document : userTable.find()) {
-            val userProfile = GSON.fromJson(document.toJson(), UserProfile.class);
-
-            SimpleWorker worker = null;
-            for (ExtendedWorkArea workArea : userProfile.pointsPerWorkArea()) {
-                if (worker == null || worker.getCurrentPoints() <= workArea.getCurrentPoints()) {
-                    worker = new SimpleWorker(userProfile.userId(), workArea.getCurrentPoints(), workArea);
-                }
-            }
-
-            if (worker == null) continue;
-            result.add(worker);
-        }
-
-        return result;
+    public LinkedList<Profile> query(int maxValues) {
+        return null;
     }
 }

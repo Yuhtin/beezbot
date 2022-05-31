@@ -4,18 +4,8 @@ import br.com.beez.model.workarea.ExtendedWorkArea;
 
 public class DeveloperArea extends ExtendedWorkArea {
 
-    @Override
-    public String name() {
-        return "Desenvolvedor";
+    public DeveloperArea() {
+        super(0, "Desenvolvedor", 978156134433161256L, 1000);
     }
 
-    @Override
-    public long roleId() {
-        return 978156134433161256L;
-    }
-
-    @Override
-    public int maxPoints() {
-        return 1000;
-    }
 }
