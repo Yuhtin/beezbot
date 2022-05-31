@@ -2,7 +2,7 @@ package br.com.beez.dto;
 
 import java.util.LinkedList;
 
-public interface MongoRepository<T> {
+public interface MongoRepository<T, I> {
 
     T find(long id);
 
@@ -12,6 +12,6 @@ public interface MongoRepository<T> {
 
     void delete(long id);
 
-    LinkedList<T> query(int maxValues);
+    LinkedList<I> query(int maxValues);
 
 }
