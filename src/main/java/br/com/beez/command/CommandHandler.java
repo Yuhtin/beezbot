@@ -1,29 +1,31 @@
 package br.com.beez.command;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.val;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface CommandHandler {
+/**
+ * @author Yuhtin
+ * Github: https://github.com/Yuhtin
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+public final class CommandHandler extends ListenerAdapter {
 
-    String name();
-    String description();
+    private final CommandMap commandMap = new CommandMap();
 
-    /*
-        Type [<argtype>arg]-Arg description for a not required arg
-        Type <<argtype>arg>-Arg description for a required arg
-
-        Arg types:
-        # - Channel
-        % - Role
-        @ - Mention user
-        ! - Integer
-        Nothing - String
-     */
-
-    String[] args();
-
+    @Override
+    public void onSlashCommand(@NotNull SlashCommandEvent event) {
+        val commands = commandMap.getCommands();
+        val command = commands.get(event.getName());
+        try {
+            command.execute(event);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            event.reply("Something went wrong!").setEphemeral(true).queue();
+        }
+    }
 }

@@ -9,6 +9,6 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
  */
 public interface Command {
 
-    void execute(CommandInteraction command, InteractionHook hook) throws Exception;
+    void execute(CommandInteraction command) throws Exception;
 
 }

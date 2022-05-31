@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.val;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.io.IOException;
@@ -29,20 +28,20 @@ public class CommandRegistry {
             return;
         }
 
-        val commands = new ArrayList<CommandData>();
+        val commands = new ArrayList<net.dv8tion.jda.api.interactions.commands.build.CommandData>();
         val commandMap = BeezBot.getCommandCatcher().getCommandMap();
         for (val info : classPath.getTopLevelClassesRecursive("br.com.beez.command.impl")) {
             try {
                 val name = Class.forName(info.getName());
                 val object = name.newInstance();
 
-                if (name.isAnnotationPresent(CommandHandler.class)) {
+                if (name.isAnnotationPresent(CommandData.class)) {
                     val command = (Command) object;
-                    val handler = (CommandHandler) name.getAnnotation(CommandHandler.class);
+                    val handler = (CommandData) name.getAnnotation(CommandData.class);
 
                     commandMap.register(handler.name(), command);
 
-                    val commandData = new CommandData(handler.name(), handler.description());
+                    val commandData = new net.dv8tion.jda.api.interactions.commands.build.CommandData(handler.name(), handler.description());
                     argsInterpreter(handler, commandData);
 
                     commands.add(commandData);
@@ -73,7 +72,7 @@ public class CommandRegistry {
         logger.info("Registered " + commandMap.getCommands().size() + " commands successfully");
     }
 
-    private void argsInterpreter(CommandHandler handler, CommandData commandData) {
+    private void argsInterpreter(CommandData handler, net.dv8tion.jda.api.interactions.commands.build.CommandData commandData) {
         for (val option : handler.args()) {
             val split = option.split("-");
             val argName = split[0];

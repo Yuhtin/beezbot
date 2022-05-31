@@ -1,6 +1,6 @@
 package br.com.beez;
 
-import br.com.beez.command.CommandCatcher;
+import br.com.beez.command.CommandHandler;
 import br.com.beez.command.CommandRegistry;
 import br.com.beez.configuration.Config;
 import br.com.beez.dto.MongoClientManager;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 public class BeezBot {
 
-    private static final CommandCatcher COMMAND_CATCHER = new CommandCatcher();
+    private static final CommandHandler COMMAND_CATCHER = new CommandHandler();
 
     @Getter
     private static JDA client;
@@ -83,7 +83,7 @@ public class BeezBot {
         Logger.getLogger().info("Shutdown complete");
     }
 
-    public static CommandCatcher getCommandCatcher() {
+    public static CommandHandler getCommandCatcher() {
         return COMMAND_CATCHER;
     }
 
