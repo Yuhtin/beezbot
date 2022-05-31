@@ -1,9 +1,12 @@
 package br.com.beez;
 
 import br.com.beez.command.CommandCatcher;
+import br.com.beez.command.CommandRegistry;
 import br.com.beez.configuration.Config;
 import br.com.beez.dto.MongoClientManager;
+import br.com.beez.dto.impl.EconomyRepository;
 import br.com.beez.dto.impl.UserRepository;
+import br.com.beez.dto.impl.WorkerRepository;
 import br.com.beez.listener.ListenerRegister;
 import br.com.beez.util.Logger;
 import lombok.Getter;
@@ -53,13 +56,19 @@ public class BeezBot {
             ListenerRegister.of(jdaBuilder).register();
             client = jdaBuilder.build();
 
+            CommandRegistry.of(client).register();
+
             val mongoUri = config.getMongoUri().replace("$login$", config.getMongoLogin());
             val mongoDatabase = config.getMongoDatabase();
 
             val mongoClientManager = MongoClientManager.instance();
             mongoClientManager.load(mongoUri, mongoDatabase);
 
-            mongoClientManager.injectTables(UserRepository.instance());
+            mongoClientManager.injectTables(
+                    UserRepository.instance(),
+                    EconomyRepository.instance(),
+                    WorkerRepository.instance()
+            );
 
             Runtime.getRuntime().addShutdownHook(new Thread(BeezBot::shutdown));
         } catch (LoginException exception) {
