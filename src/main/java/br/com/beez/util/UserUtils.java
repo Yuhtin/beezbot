@@ -29,7 +29,7 @@ public class UserUtils {
     }
 
     public static void sendNoPermissionMessage(CommandInteraction commandInteraction) {
-        commandInteraction.getHook().sendMessage("<:fuckyou:855725185846870016> Você não tem permissão para isto").queue();
+        commandInteraction.getHook().sendMessage(":x: Você não tem permissão para isto").queue();
     }
 
     public static PrivateChannel getPrivateChannel(User user) {
@@ -39,36 +39,4 @@ public class UserUtils {
         return channel;
     }
 
-    public static PrivateChannel getPrivateChannel(InteractionHook hook, boolean message) {
-        val interaction = hook.getInteraction();
-        val privateChannel = interaction.getUser().openPrivateChannel().complete();
-        if (privateChannel == null || !interaction.getUser().hasPrivateChannel()) {
-            if (!message) return null;
-
-            val embedBuilder = new EmbedBuilder();
-            embedBuilder.setColor(SimpleEmbed.getColor());
-            embedBuilder.setTitle("<:BC_info:898725365999095859> **Ops!**");
-            embedBuilder.setDescription("Parece que você está com o recebimento de mensagens diretas desativado. Por favor, ative-as para prosseguir.");
-            hook.sendMessageEmbeds(embedBuilder.build()).queue();
-            return null;
-        }
-
-        return privateChannel;
-    }
-
-    public static PrivateChannel getPrivateChannel(TextChannel channel, User user) {
-        if (user == null) return null;
-
-        val privateChannel = user.openPrivateChannel().complete();
-        if (privateChannel == null || !user.hasPrivateChannel()) {
-            val embedBuilder = new EmbedBuilder();
-            embedBuilder.setColor(SimpleEmbed.getColor());
-            embedBuilder.setTitle("<:BC_info:898725365999095859> **Ops!**");
-            embedBuilder.setDescription("Parece que você está com o recebimento de mensagens diretas desativado. Por favor, ative-as para prosseguir.");
-            if (channel != null) channel.sendMessageEmbeds(embedBuilder.build()).queue();
-            return null;
-        }
-
-        return privateChannel;
-    }
 }

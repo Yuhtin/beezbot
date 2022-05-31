@@ -1,6 +1,10 @@
 package br.com.beez;
 
+import br.com.beez.command.CommandCatcher;
 import br.com.beez.configuration.Config;
+import br.com.beez.dto.MongoClientManager;
+import br.com.beez.dto.impl.UserRepository;
+import br.com.beez.listener.ListenerRegister;
 import br.com.beez.util.Logger;
 import lombok.Getter;
 import lombok.val;
@@ -11,11 +15,16 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 
-public class BezzBot {
+public class BeezBot {
 
-    @Getter private static JDA client;
-    @Getter private static long startupMillis;
-    @Getter private static Config config;
+    private static final CommandCatcher COMMAND_CATCHER = new CommandCatcher();
+
+    @Getter
+    private static JDA client;
+    @Getter
+    private static long startupMillis;
+    @Getter
+    private static Config config;
 
     public static void main(String[] args) {
         startupMillis = System.currentTimeMillis();
@@ -41,21 +50,32 @@ public class BezzBot {
                     .enableIntents(intents)
                     .addEventListeners(COMMAND_CATCHER);
 
+            ListenerRegister.of(jdaBuilder).register();
+            client = jdaBuilder.build();
 
+            val mongoUri = config.getMongoUri().replace("$login$", config.getMongoLogin());
+            val mongoDatabase = config.getMongoDatabase();
+
+            val mongoClientManager = MongoClientManager.instance();
+            mongoClientManager.load(mongoUri, mongoDatabase);
+
+            mongoClientManager.injectTables(UserRepository.instance());
+
+            Runtime.getRuntime().addShutdownHook(new Thread(BeezBot::shutdown));
         } catch (LoginException exception) {
-
+            exception.printStackTrace();
+            logger.severe("Could not login to discord");
+            System.exit(0);
         }
-
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            Logger.getLogger().info("Shuting down...");
-            shutdown();
-        }));
     }
 
     public static void shutdown() {
-
+        MongoClientManager.instance().close();
         Logger.getLogger().info("Shutdown complete");
+    }
+
+    public static CommandCatcher getCommandCatcher() {
+        return COMMAND_CATCHER;
     }
 
 }
